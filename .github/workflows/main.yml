@@ -1,0 +1,34 @@
+name: mafalda_bot_tw
+
+# on:
+  # schedule:
+    # - cron: 0 17 * * *  #  Runs at 17:00 UTC every day 
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.7'
+        architecture: 'x64' 
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+           
+    - name: Run bot
+      run: python main.py
+      env:
+        CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
+        CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
