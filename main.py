@@ -20,6 +20,9 @@ GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
 GITHUB_REPOSITORY = os.environ["GITHUB_REPOSITORY"]
 
 headers_api_github = {"Authorization": f"token {GITHUB_TOKEN}"}
+url_api_github = (
+    f"https://api.github.com/repos/{GITHUB_REPOSITORY}/contents/{p_json.name}"
+)
 
 
 def remove_zero_from_start(s):
@@ -64,13 +67,12 @@ if __name__ == "__main__":
 
     print("Tweet done!")
 
+    old_json_data = requests.get(url_api_github).json()
+    sha = old_json_data["sha"]
+
     message = f"Update valid_comics.json"
     content = b64encode(json.dumps(valid_comics).encode())
-    json_data = {"message": message, "content": content.decode()}
-
-    url_api_github = (
-        f"https://api.github.com/repos/{GITHUB_REPOSITORY}/contents/{p_json.name}"
-    )
+    json_data = {"message": message, "content": content.decode(), "sha": sha}
 
     print("Uploading valid_comics.json")
 
