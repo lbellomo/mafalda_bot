@@ -1,15 +1,11 @@
 name: mafalda_bot_tw
 
-# on:
-  # schedule:
-    # - cron: 0 17 * * *  #  Runs at 17:00 UTC every day 
-
 on:
-  push:
-    branches: [ master ]
+  schedule:
+    - cron: 30 6,10,14,17,19,21 * * *  #  Runs every 30th minute past the 6, 10, 14, 17, 19 and 21th hour 
 
 jobs:
-  scraper:
+  bot:
     runs-on: ubuntu-latest
 
     steps:
