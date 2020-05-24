@@ -2,7 +2,7 @@ name: mafalda_bot_tw
 
 on:
   schedule:
-    - cron: 30 6,10,14,17,19,21 * * *  #  Runs every 30th minute past the 6, 10, 14, 17, 19 and 21th hour 
+    - cron: 0 */2 * * *
 
 jobs:
   bot:
