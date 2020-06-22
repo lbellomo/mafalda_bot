@@ -9,3 +9,5 @@ The bot is very simple:
 - Choose one at random and remove it from the list.
 - Tweets the file.
 - Commit to the repo by updating the json with the file list.
+
+In utils there is a small script to make the bot a little more known.
