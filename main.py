@@ -71,7 +71,7 @@ if __name__ == "__main__":
     sha = old_json_data["sha"]
 
     message = f"Update valid_comics.json"
-    content = b64encode(json.dumps(valid_comics).encode())
+    content = b64encode(json.dumps(valid_comics, indent=0).encode())
     json_data = {"message": message, "content": content.decode(), "sha": sha}
 
     print("Uploading valid_comics.json")
