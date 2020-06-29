@@ -1,4 +1,6 @@
 import os
+import sys
+import time
 import json
 from pathlib import Path
 from random import choice
@@ -56,7 +58,7 @@ if __name__ == "__main__":
     elif parte == "b":
         parte = "2da"
 
-    status = f"Vol. {remove_zero_from_start(volumen)}, pag. {remove_zero_from_start(pagina)}, {parte} parte."
+    status = f"Vol. {remove_zero_from_start(volumen)}, pag. {remove_zero_from_start(pagina)}, {parte} parte. \n #Mafalda \n #Quino"
 
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
@@ -76,7 +78,22 @@ if __name__ == "__main__":
 
     print("Uploading valid_comics.json")
 
-    r = requests.put(url_api_github, headers=headers_api_github, json=json_data)
-    r.raise_for_status()
+    errors_count = 0
+    max_errors_count = 5
+
+    while True:
+        try:
+            r = requests.put(url_api_github, headers=headers_api_github, json=json_data)
+            r.raise_for_status()
+        except Exception as e:
+            print(f"Error found: {e}")
+            errors_count += 1
+            if errors_count == max_errors_count:
+                print("Max number of errors reached!")
+                sys.exit(1)
+
+            time.sleep(errors_count + 1)
+        else:
+            break
 
     print("All done!")
