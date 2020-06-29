@@ -58,7 +58,7 @@ if __name__ == "__main__":
     elif parte == "b":
         parte = "2da"
 
-    status = f"Vol. {remove_zero_from_start(volumen)}, pag. {remove_zero_from_start(pagina)}, {parte} parte. \n #Mafalda \n #Quino"
+    status = f"Vol. {remove_zero_from_start(volumen)}, pag. {remove_zero_from_start(pagina)}, {parte} parte. #Mafalda #Quino"
 
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
