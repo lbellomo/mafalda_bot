@@ -1,12 +1,14 @@
+import sys
 from pathlib import Path
 
 import tweepy
 from loguru import logger
 
+path = Path(sys.argv[0]).parent
 
 def read_secret():
     # TODO: change de secret format
-    with open("secrets") as f:
+    with open(path / "secrets") as f:
         secrets = [i.strip()[1:-1] for i in f.readlines()]
 
     CONSUMER_KEY = secrets[1]
@@ -33,9 +35,9 @@ def create_api():
     return api
 
 
-ignore_users = ["FrasesDeMafalda", "Ed_delaFlor", "MafaldaDigital", "MrsMafalda31"]
+ignore_users = ["mafalda_bot", "FrasesDeMafalda", "Ed_delaFlor", "MafaldaDigital", "MrsMafalda31"]
 q = "mafalda AND quino exclude:nativeretweets exclude:retweets"
-path_max_status_id = Path("max_status_id")
+path_max_status_id = path / "max_status_id"
 
 if not path_max_status_id.exists():
     max_status_id = None
