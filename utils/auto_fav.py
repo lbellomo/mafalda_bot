@@ -6,6 +6,7 @@ from loguru import logger
 
 path = Path(sys.argv[0]).parent
 
+
 def read_secret():
     # TODO: change de secret format
     with open(path / "secrets") as f:
@@ -35,7 +36,13 @@ def create_api():
     return api
 
 
-ignore_users = ["mafalda_bot", "FrasesDeMafalda", "Ed_delaFlor", "MafaldaDigital", "MrsMafalda31"]
+ignore_users = [
+    "mafalda_bot",
+    "FrasesDeMafalda",
+    "Ed_delaFlor",
+    "MafaldaDigital",
+    "MrsMafalda31",
+]
 q = "mafalda AND quino exclude:nativeretweets exclude:retweets"
 path_max_status_id = path / "max_status_id"
 
@@ -47,11 +54,10 @@ else:
 if __name__ == "__main__":
 
     logger.add(
-        "file_{time}.log",
-        rotation="1 day",
-        retention="7 days",
-        colorize=True,
-        format="<green>{time}</green> <level>{message}</level>",
+        path / "auto_fav.log",
+        format="{time:YYYY:MM:DD HH:mm:ss} - {level} - {message}",
+        rotation="5 MB",
+        retention=5,
     )
 
     api = create_api()
