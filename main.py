@@ -13,6 +13,8 @@ import requests
 p_data = Path("crypt/")
 p_json = Path("valid_comics.json")
 
+max_errors_count = 5
+
 CONSUMER_KEY = os.environ["CONSUMER_KEY"]
 CONSUMER_SECRET = os.environ["CONSUMER_SECRET"]
 ACCESS_TOKEN = os.environ["ACCESS_TOKEN"]
@@ -65,7 +67,22 @@ if __name__ == "__main__":
 
     api = tweepy.API(auth)
     media = api.media_upload(filename)
-    tweet = api.update_status(status=status, media_ids=[media.media_id])
+    
+    errors_count = 0
+
+    while True:
+        try:
+            tweet = api.update_status(status=status, media_ids=[media.media_id])
+        except Exception as e:
+            print(f"Error found: {e}")
+            errors_count += 1
+            if errors_count == max_errors_count:
+                print("Max number of errors reached with twitter API!")
+                sys.exit(1)
+
+            time.sleep(errors_count + 1)
+        else:
+            break
 
     print("Tweet done!")
 
@@ -79,7 +96,6 @@ if __name__ == "__main__":
     print("Uploading valid_comics.json")
 
     errors_count = 0
-    max_errors_count = 5
 
     while True:
         try:
@@ -89,7 +105,7 @@ if __name__ == "__main__":
             print(f"Error found: {e}")
             errors_count += 1
             if errors_count == max_errors_count:
-                print("Max number of errors reached!")
+                print("Max number of errors reached with github API!")
                 sys.exit(1)
 
             time.sleep(errors_count + 1)
