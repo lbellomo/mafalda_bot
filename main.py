@@ -1,17 +1,14 @@
 import os
 import sys
 import time
-import json
 from pathlib import Path
 from random import choice
 from codecs import decode
-from base64 import b64encode, b64decode
+from base64 import b64decode
 
 import tweepy
-import requests
 
 p_data = Path("crypt/")
-p_json = Path("valid_comics.json")
 
 max_errors_count = 5
 
@@ -19,14 +16,6 @@ CONSUMER_KEY = os.environ["CONSUMER_KEY"]
 CONSUMER_SECRET = os.environ["CONSUMER_SECRET"]
 ACCESS_TOKEN = os.environ["ACCESS_TOKEN"]
 ACCESS_TOKEN_SECRET = os.environ["ACCESS_TOKEN_SECRET"]
-
-GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
-GITHUB_REPOSITORY = os.environ["GITHUB_REPOSITORY"]
-
-headers_api_github = {"Authorization": f"token {GITHUB_TOKEN}"}
-url_api_github = (
-    f"https://api.github.com/repos/{GITHUB_REPOSITORY}/contents/{p_json.name}"
-)
 
 
 def remove_zero_from_start(s):
@@ -39,14 +28,9 @@ if __name__ == "__main__":
 
     print("Starting ...")
 
-    with p_json.open() as f:
-        valid_comics = json.load(f)
-
-    if not valid_comics:
-        valid_comics = list(p.name for p in p_data.iterdir())
+    valid_comics = list(p.name for p in p_data.iterdir())
 
     comic = choice(valid_comics)
-    valid_comics.remove(comic)
 
     filename = comic + ".png"
     super_secret = (p_data / comic).read_text()
@@ -67,7 +51,7 @@ if __name__ == "__main__":
 
     api = tweepy.API(auth)
     media = api.media_upload(filename)
-    
+
     errors_count = 0
 
     while True:
@@ -85,31 +69,3 @@ if __name__ == "__main__":
             break
 
     print("Tweet done!")
-
-    old_json_data = requests.get(url_api_github).json()
-    sha = old_json_data["sha"]
-
-    message = f"Update valid_comics.json"
-    content = b64encode(json.dumps(valid_comics, indent=0).encode())
-    json_data = {"message": message, "content": content.decode(), "sha": sha}
-
-    print("Uploading valid_comics.json")
-
-    errors_count = 0
-
-    while True:
-        try:
-            r = requests.put(url_api_github, headers=headers_api_github, json=json_data)
-            r.raise_for_status()
-        except Exception as e:
-            print(f"Error found: {e}")
-            errors_count += 1
-            if errors_count == max_errors_count:
-                print("Max number of errors reached with github API!")
-                sys.exit(1)
-
-            time.sleep(errors_count + 1)
-        else:
-            break
-
-    print("All done!")
