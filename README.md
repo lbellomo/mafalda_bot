@@ -15,3 +15,9 @@ The bot is very simple:
 ## Auto_fav
 
 An attempt was made to publicize the bot with various methods (from telling friends to paying for advertising) but the result was terrible, less than 20 followers. To solve this, there is the `auto_fav.py` that looks for tweets about Mafalda in the last week and faves them in the hope that the user will see the bot and be of interest.
+
+This script can run in a `cron` with `flock` (to prevent it from running again if it is already running) like this:
+
+``` shell
+30 * * * * /usr/bin/flock -n /tmp/amps.lockfile python3 /path/to/auto_fav.py
+```

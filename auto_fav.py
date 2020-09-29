@@ -71,9 +71,44 @@ def search_knows_users_ids(path_know_users_ids):
 
     return know_users_ids
 
+def filter_result(result, know_users_ids):
+    """Util to filter tweets in the search."""
+    result = result._json
+    if "retweeted_status" in result or result["user"]["id_str"] in know_users_ids or result["favorited"]:
+        return False
+    else:
+        return True
+
+def reduce_result(result):
+    """Util to extract the useful info from the tweet."""
+    result = result._json
+    new_result = {}
+    new_result["id"] = result["id"]
+    new_result["user"] = {}
+    new_result["user"]["id_str"] = result["user"]["id_str"]
+    new_result["user"]["screen_name"] = result["user"]["screen_name"]
+
+    return new_result
+
+def get_result():
+    know_users_ids = search_knows_users_ids(path_know_users_ids)
+    last_favs = get_jsons(api.favorites())
+
+    if last_favs:
+        since_id = last_favs[0]["id"]
+    else:
+        since_id = None
+
+    # We only a bit of information, not all the  tweet.
+    search_results = [
+        reduce_result(result)
+        for result in tweepy.Cursor(api.search, q=q, since_id=since_id, count=100).items()
+        if filter_result(result, know_users_ids)
+    ]
+    return search_results
+
 
 path = Path(sys.argv[0]).parent
-# path_know_users_ids = Path("know_users_ids.csv")
 path_know_users_ids = path / "know_users_ids.csv"
 
 logger.add(
@@ -84,42 +119,28 @@ logger.add(
 )
 
 api = create_api(path_secret=path / "secrets")
-know_users_ids = search_knows_users_ids(path_know_users_ids)
-
-
 q = "(mafalda AND quino) OR (#mafalda -#quino) OR (-#mafalda #quino)"
 
-
-last_favs = get_jsons(api.favorites())
-
-if last_favs:
-    since_id = last_favs[0]["id"]
-else:
-    since_id = None
-
-search_results = [result._json for result in tweepy.Cursor(api.search, q=q, since_id=since_id, count=100).items()]
-search_results = [
-    result
-    for result in search_results
-    if "retweeted_status" not in result
-    and result["user"]["id_str"] not in know_users_ids
-    and not result["favorited"]
-]
-
+search_results = get_result()
 
 logger.info(f"Find {len(search_results)} new tweets to fav")
 
 
+new_favs = 0
+skipped_favs = 0
 new_users_ids = set()
+
 for result in reversed(search_results):
     user_id = result["user"]["id_str"]
     if user_id in new_users_ids:
         logger.info(f"This user {user_id} have a tweet with a fav alredy, skip.")
+        skipped_favs += 1
         continue
 
     api.create_favorite(result["id"])
     new_users_ids.update([user_id])
     logger.info(f"New fav: user id {user_id} screen_name {result['user']['screen_name']}, tweet_id {result['id']}")
+    new_favs += 1
     # tenemos mil en una ventana de 24 horas
     # aprox uno cada 90 seg
     # (60*60*24) / 1000 ~= 86.4
@@ -128,3 +149,4 @@ for result in reversed(search_results):
 
 know_users_ids.update(new_users_ids)
 save_knows_users_ids(path_know_users_ids)
+logger.info(f"Total favs: {new_favs}. Total skipped: {skipped_favs}")
