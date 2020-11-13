@@ -8,14 +8,20 @@ from base64 import b64decode
 
 import tweepy
 
-p_data = Path("crypt/")
-
 max_errors_count = 5
 
 CONSUMER_KEY = os.environ["CONSUMER_KEY"]
 CONSUMER_SECRET = os.environ["CONSUMER_SECRET"]
 ACCESS_TOKEN = os.environ["ACCESS_TOKEN"]
 ACCESS_TOKEN_SECRET = os.environ["ACCESS_TOKEN_SECRET"]
+LANG = os.environ["LANG"]
+
+if LANG == "es":
+    p_data = Path("crypt/")
+    file_sufix = ".png"
+elif LANG == "pt":
+    p_data = Path("crypt_pt")
+    file_sufix = ".jpeg"
 
 
 def remove_zero_from_start(s):
@@ -32,19 +38,35 @@ if __name__ == "__main__":
 
     comic = choice(valid_comics)
 
-    filename = comic + ".png"
+    filename = comic + file_sufix
+
     super_secret = (p_data / comic).read_text()
     im_b = b64decode(decode(super_secret, "rot-13"))
     p_im = Path(filename)
     p_im.write_bytes(im_b)
 
-    _, volumen, pagina, parte = comic.split("-")
-    if parte == "a":
-        parte = "1ra"
-    elif parte == "b":
-        parte = "2da"
+    if LANG == "es":
+        _, volumen, pagina, parte = comic.split("-")
+        if parte == "a":
+            parte = "1ra"
+        elif parte == "b":
+            parte = "2da"
 
-    status = f"Vol. {remove_zero_from_start(volumen)}, pag. {remove_zero_from_start(pagina)}, {parte} parte. #Mafalda #Quino"
+        status = f"Vol. {remove_zero_from_start(volumen)}, pag. {remove_zero_from_start(pagina)}, {parte} parte. #Mafalda #Quino"
+
+    elif LANG == "pt":
+        _, _, pagina, parte = comic.split("_")
+
+        if parte == "a":
+            parte = "um"
+        elif parte == "b":
+            parte = "dois"
+        elif parte == "c":
+            parte = "três"
+        elif parte == "d":
+            parte = "quatro"
+
+        status = f"Toda Mafalda, página {pagina}, parte {parte}. #Mafalda #Quino"
 
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)

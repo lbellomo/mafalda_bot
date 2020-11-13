@@ -1,8 +1,10 @@
 name: mafalda_bot_tw
 
 on:
-  schedule:
-    - cron: 0 */2 * * *
+  #schedule:
+  #  - cron: 0 */2 * * *
+  push:
+    branches: [ master ]
 
 jobs:
   bot:
@@ -28,3 +30,4 @@ jobs:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        LANG: es
