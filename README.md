@@ -1,6 +1,6 @@
 # Mafalda_bot 🤖
 
-Check out the bot on twitter: [@mafalda_bot 🤖](https://twitter.com/mafalda_bot) and in portuges: [@mafalda_bot 🤖 (pt)](https://twitter.com/mafalda_bot_pt)
+Check out the bot on twitter: [@mafalda_bot 🤖](https://twitter.com/mafalda_bot) and in portuges: [@mafalda_bot 🤖 (pt)](https://twitter.com/mafalda_bot_pt).
 
 This repo has the code and the data for a bot that tweets a [Mafalda](https://en.wikipedia.org/wiki/Mafalda) comic from [Quino](https://en.wikipedia.org/wiki/Quino) every couple of hours.
 
