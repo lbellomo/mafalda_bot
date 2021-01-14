@@ -1,0 +1,25 @@
+# Commit something to the repo every month so GH don't cancel the others actions for inactivity
+
+name: bump
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # bump a dummy file
+      - name: Run a one-line script
+        run: date > .bump.txt
+          
+      - name: Commit report
+        run: |
+          git config --global user.name 'Bump bot'
+          git config --global user.email 'bump@bot.com'
+          git commit -am "bump repo"
+          git push
