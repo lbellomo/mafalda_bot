@@ -2,7 +2,7 @@ name: mafalda_bot_tw_pt
 
 on:
   schedule:
-    - cron: 0 */2 * * *
+    # - cron: 0 */2 * * *
 
 jobs:
   bot:
